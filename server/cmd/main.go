@@ -6,6 +6,7 @@ import (
 	"sentinel/server/api"
 	"sentinel/server/scheduler"
 	"sentinel/server/service"
+	"sentinel/server/service/message"
 	"sentinel/server/storage"
 )
 
@@ -17,7 +18,7 @@ func main() {
 
 	svc := service.NewService()
 	sched := scheduler.NewScheduler(svc)
-
+	message.RegisterProcessor()
 	go sched.Start()
 
 	r := api.NewAPI(svc).Routes()

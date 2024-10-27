@@ -14,25 +14,28 @@ type uptimeKuma struct {
 func (s *uptimeKuma) process() {
 	for msg := range s.msgChan {
 		uptimeMsg := s.ParseLogEntry(msg)
+		if uptimeMsg == nil {
+			continue
+		}
 		if !s.isNormal(uptimeMsg) {
-			log.Printf("Service Is Exception:", uptimeMsg.AppName)
+			log.Println("Service Is Exception:", uptimeMsg.AppName)
 		}
 	}
 
 }
 
-// LogEntry 结构体表示提取的日志信息
+func (s *uptimeKuma) push(msg *model.Message) {
+	s.msgChan <- msg
+}
+
 type LogEntry struct {
 	AppName string
 	Status  string
 	Msg     string
 }
 
-// ParseLogEntry 解析日志字符串并返回 LogEntry
 func (s *uptimeKuma) ParseLogEntry(msg *model.Message) *LogEntry {
-	// 更新的正则表达式，仅提取 Up 或 Down
 	re := regexp.MustCompile(`^\[(.*?)\] \[\D*(Up|Down)\] (.*)$`)
-
 	matches := re.FindStringSubmatch(msg.Message)
 	if matches == nil || len(matches) != 4 {
 		return nil

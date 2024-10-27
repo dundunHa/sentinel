@@ -11,6 +11,7 @@ import (
 	"sentinel/server/config"
 	"sentinel/server/dao"
 	"sentinel/server/model"
+	msgProcessor "sentinel/server/service/message"
 )
 
 type Service struct {
@@ -48,7 +49,7 @@ func (s *Service) HandleMessages() error {
 		//if message.ID<=lastProcessedID{
 		//	continue
 		//}
-		log.Printf("Processing new message: %s - %s", message.Title, message.Message)
+		msgProcessor.SendMsg(&message)
 		if message.ID > maxID {
 			maxID = message.ID
 		}
@@ -118,7 +119,7 @@ func (s *Service) GetMessages() ([]model.Message, error) {
 		return nil, errors.New("failed to get messages")
 	}
 
-	var gotifyRsp model.GotifyMessage
+	var gotifyRsp model.GotifyMsg
 	if err := json.NewDecoder(resp.Body).Decode(&gotifyRsp); err != nil {
 		return nil, err
 	}

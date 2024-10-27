@@ -14,9 +14,11 @@ type GotifyMsg struct {
 	Messages []Message `json:"messages"`
 }
 
+type ProcessorAPPID int
+
 type Message struct {
-	ID      int    `json:"id"`
-	Title   string `json:"title"`
-	Message string `json:"message"`
-	APPID   int    `json:"appid"`
+	ID      int            `json:"id"`
+	Title   string         `json:"title"`
+	Message string         `json:"message"`
+	APPID   ProcessorAPPID `json:"appid"`
 }

@@ -10,8 +10,9 @@ COPY go.sum ./
 RUN go mod download
 
 COPY . .
-
-# 编译 Go 程序
+ENV CGO_ENABLED=0
+ENV GOOS=linux
+ENV GOARCH=amd64
 RUN go build -o app server/cmd/main.go
 
 # 第二阶段：创建一个更小的镜像

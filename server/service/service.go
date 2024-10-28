@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"gorm.io/gorm"
 	"log"
 	"net/http"
 	"sentinel/server/config"
@@ -13,6 +12,8 @@ import (
 	"sentinel/server/model"
 	"sentinel/server/service/docker"
 	msgProcessor "sentinel/server/service/message"
+
+	"gorm.io/gorm"
 )
 
 type Service struct {
@@ -23,7 +24,6 @@ type Service struct {
 func NewService() *Service {
 	cfg := config.LoadConfig()
 	client := NewClient(cfg.GotifyURL, cfg.GotifyToken)
-
 
 	return &Service{
 		client:        client,
@@ -37,7 +37,7 @@ func (s *Service) HandleMessages() error {
 		return err
 	}
 
-	messages, err := s.GetMessages()
+	messages, err := s.GetMessages(lastProcessedID)
 	if err != nil {
 		return err
 	}
@@ -98,8 +98,8 @@ func (c *GotifyClient) SendMessage(title, message string) error {
 	return nil
 }
 
-func (s *Service) GetMessages() ([]model.Message, error) {
-	url := fmt.Sprintf("%s/message", s.client.url)
+func (s *Service) GetMessages(lastID int) ([]model.Message, error) {
+	url := fmt.Sprintf("%s/message?since=%d", s.client.url, lastID)
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
 		return nil, err

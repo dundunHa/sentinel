@@ -27,7 +27,7 @@ func (a *API) Routes() http.Handler {
 }
 
 func (a *API) GetMessages(w http.ResponseWriter, r *http.Request) {
-	messages, err := a.svc.GetMessages()
+	messages, err := a.svc.GetMessages(0)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return

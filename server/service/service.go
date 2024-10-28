@@ -99,7 +99,7 @@ func (c *GotifyClient) SendMessage(title, message string) error {
 }
 
 func (s *Service) GetMessages(lastID int) ([]model.Message, error) {
-	url := fmt.Sprintf("%s/message?since=%d", s.client.url, lastID)
+	url := fmt.Sprintf("%s/message", s.client.url)
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
 		return nil, err

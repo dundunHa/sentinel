@@ -6,10 +6,62 @@ import (
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/api/types/container"
 	"github.com/docker/docker/client"
+	"sentinel/server/model"
+	"strings"
 )
 
 type DockerService struct {
 	cli *client.Client
+}
+
+var DockerClientMap = make(map[model.ProcessorAPPID]*client.Client)
+
+func RegisterDockerClient() error {
+	if err := registerClient(1, "unix:///var/run-host/docker.sock"); err != nil {
+		return err
+	}
+	if err := registerClient(4, "http://192.168.1.2:12375"); err != nil {
+		return err
+	}
+	return nil
+}
+
+func registerClient(appid model.ProcessorAPPID, addr string) error {
+	client, err := NewDockerClient(addr)
+	if err != nil {
+		return err
+	}
+	DockerClientMap[appid] = client
+
+	return nil
+}
+
+func NewDockerClient(addr string) (*client.Client, error) {
+	var cli *client.Client
+	var err error
+
+	if strings.HasPrefix(addr, "unix://") {
+		// 使用 Unix 套接字方式连接
+		cli, err = client.NewClientWithOpts(
+			client.WithHost(addr),
+			client.WithAPIVersionNegotiation(),
+		)
+	} else {
+		// 使用 TCP 方式连接，确保前缀为 tcp://
+		if !strings.HasPrefix(addr, "tcp://") {
+			addr = "tcp://" + addr
+		}
+		cli, err = client.NewClientWithOpts(
+			client.WithHost(addr),
+			client.WithAPIVersionNegotiation(),
+		)
+	}
+
+	if err != nil {
+		return nil, err
+	}
+
+	return cli, nil
 }
 
 func NewDockerService() (*DockerService, error) {

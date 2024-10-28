@@ -19,6 +19,8 @@ func (s *uptimeKuma) process() {
 		}
 		if !s.isNormal(uptimeMsg) {
 			log.Println("Service Is Exception:", uptimeMsg.AppName)
+		} else {
+			log.Println("Service Is Running:", uptimeMsg.AppName)
 		}
 	}
 
@@ -29,9 +31,10 @@ func (s *uptimeKuma) push(msg *model.Message) {
 }
 
 type LogEntry struct {
-	AppName string
-	Status  string
-	Msg     string
+	AppName     string
+	Status      string
+	Msg         string
+	GotifyAppID model.ProcessorAPPID
 }
 
 func (s *uptimeKuma) ParseLogEntry(msg *model.Message) *LogEntry {
@@ -42,9 +45,10 @@ func (s *uptimeKuma) ParseLogEntry(msg *model.Message) *LogEntry {
 	}
 
 	return &LogEntry{
-		AppName: matches[1],
-		Status:  matches[2],
-		Msg:     matches[3],
+		AppName:     matches[1],
+		Status:      matches[2],
+		Msg:         matches[3],
+		GotifyAppID: msg.APPID,
 	}
 }
 

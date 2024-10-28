@@ -46,9 +46,9 @@ func (s *Service) HandleMessages() error {
 
 	var maxID = lastProcessedID
 	for _, message := range messages {
-		//if message.ID<=lastProcessedID{
-		//	continue
-		//}
+		if message.ID <= lastProcessedID {
+			continue
+		}
 		msgProcessor.SendMsg(&message)
 		if message.ID > maxID {
 			maxID = message.ID

@@ -13,9 +13,12 @@ func RegisterProcessor() {
 	processorMap = make(map[model.ProcessorAPPID]processor, 16)
 	uk := &uptimeKuma{msgChan: make(chan *model.Message, 100)}
 	processorMap[1] = uk
+	processorMap[4] = uk
 	go uk.process()
 }
 
 func SendMsg(msg *model.Message) {
-	processorMap[msg.APPID].push(msg)
+	if v, ok := processorMap[msg.APPID]; ok {
+		v.push(msg)
+	}
 }

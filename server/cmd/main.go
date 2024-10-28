@@ -19,6 +19,10 @@ func main() {
 	svc := service.NewService()
 	sched := scheduler.NewScheduler(svc)
 	message.RegisterProcessor()
+	if err := service.RegisterDockerClient(); err != nil {
+		log.Fatalf("Failed to register docker client: %v", err)
+	}
+
 	go sched.Start()
 
 	r := api.NewAPI(svc).Routes()

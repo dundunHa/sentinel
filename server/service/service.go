@@ -11,25 +11,23 @@ import (
 	"sentinel/server/config"
 	"sentinel/server/dao"
 	"sentinel/server/model"
+	"sentinel/server/service/docker"
 	msgProcessor "sentinel/server/service/message"
 )
 
 type Service struct {
 	client        *GotifyClient
-	dockerService *DockerService
+	dockerService *docker.DockerService
 }
 
 func NewService() *Service {
 	cfg := config.LoadConfig()
 	client := NewClient(cfg.GotifyURL, cfg.GotifyToken)
-	dkService, err := NewDockerService()
-	if err != nil {
-		log.Fatalf(err.Error())
-	}
+
 
 	return &Service{
 		client:        client,
-		dockerService: dkService,
+		dockerService: nil,
 	}
 }
 

@@ -1,5 +1,5 @@
 # 第一阶段：使用官方 Go 镜像进行编译
-FROM golang:1.20-alpine AS builder
+FROM dk.lixp.dev/golang:1.23-alpine AS builder
 
 # 设置工作目录
 WORKDIR /app
@@ -12,10 +12,10 @@ RUN go mod download
 COPY . .
 
 # 编译 Go 程序
-RUN go build -o app
+RUN go build -o app server/cmd/main.go
 
 # 第二阶段：创建一个更小的镜像
-FROM alpine:latest
+FROM dk.lixp.dev/alpine:latest
 
 # 复制编译后的二进制文件
 COPY --from=builder /app/app /app

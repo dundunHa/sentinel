@@ -6,6 +6,7 @@ import (
 	"sentinel/server/api"
 	"sentinel/server/scheduler"
 	"sentinel/server/service"
+	"sentinel/server/service/docker"
 	"sentinel/server/service/message"
 	"sentinel/server/storage"
 )
@@ -19,7 +20,7 @@ func main() {
 	svc := service.NewService()
 	sched := scheduler.NewScheduler(svc)
 	message.RegisterProcessor()
-	if err := service.RegisterDockerClient(); err != nil {
+	if err := docker.RegisterDockerClient(); err != nil {
 		log.Fatalf("Failed to register docker client: %v", err)
 	}
 

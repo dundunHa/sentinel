@@ -5,6 +5,7 @@ import (
 	"regexp"
 	"sentinel/server/model"
 	"strings"
+	"sentinel/server/service/docker"
 )
 
 type uptimeKuma struct {
@@ -19,6 +20,10 @@ func (s *uptimeKuma) process() {
 		}
 		if !s.isNormal(uptimeMsg) {
 			log.Println("Service Is Exception:", uptimeMsg.AppName)
+			log.Println("will get docker client")
+			dkservice :=docker.NewDockerService(docker.DockerClientMap[msg.APPID])
+			log.Println("cli:",dkservice.Cli)
+			dkservice.RestartContainer(uptimeMsg.AppName)
 		} else {
 			log.Println("Service Is Running:", uptimeMsg.AppName)
 		}
